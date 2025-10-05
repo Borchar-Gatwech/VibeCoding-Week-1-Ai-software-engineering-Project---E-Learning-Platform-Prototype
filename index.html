@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini E-Learning Platform</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f8fa;
+      color: #333;
+    }
+
+    header {
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* ---------- Login/Signup ---------- */
+    .auth-container {
+      max-width: 400px;
+      margin: 5rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .auth-container input {
+      width: 90%;
+      padding: 0.7rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .auth-container button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .auth-container button:hover {
+      background: #1d4ed8;
+    }
+
+    /* ---------- Search ---------- */
+    #searchBar {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    /* ---------- Courses ---------- */
+    .course-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      padding: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 8px;
+      background: #22c55e;
+      width: 0%;
+      transition: width 0.4s;
+    }
+
+    /* ---------- Course Details ---------- */
+    .course-details {
+      display: none;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      padding: 2rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .lesson {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-left: 4px solid #2563eb;
+      background: #f0f4ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lesson button {
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1e4ed8;
+    }
+
+    .completed {
+      background: #22c55e !important;
+    }
+
+    .back-btn {
+      background: #e5e7eb;
+      color: #333;
+      margin-top: 1rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <header>🎓 Mini E-Learning Platform</header>
+
+  <main>
+    <!-- Login/Signup Screen -->
+    <div id="authScreen" class="auth-container">
+      <h2>Welcome to VibeLearn</h2>
+      <input type="text" id="username" placeholder="Enter your name" />
+      <button onclick="login()">Login / Sign Up</button>
+    </div>
+
+    <!-- Course List -->
+    <div id="courseScreen" style="display: none;">
+      <input type="text" id="searchBar" placeholder="Search courses..." oninput="filterCourses()" />
+      <div id="courseList" class="course-list"></div>
+    </div>
+
+    <!-- Course Details -->
+    <div id="courseDetails" class="course-details">
+      <h2 id="courseTitle"></h2>
+      <p id="courseDescription"></p>
+      <div id="lessons"></div>
+      <button class="back-btn" onclick="showCourseList()">← Back to Courses</button>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Initial Data ----------
+    const courses = [
+      {
+        id: 1,
+        title: "Intro to Web Development",
+        description: "Learn the basics of HTML, CSS, and JavaScript.",
+        lessons: ["HTML Basics", "CSS Styling", "JavaScript Interactivity"],
+        progress: 0
+      },
+      {
+        id: 2,
+        title: "Python for Beginners",
+        description: "Start coding with Python and build simple programs.",
+        lessons: ["Variables", "Loops", "Functions"],
+        progress: 0
+      },
+      {
+        id: 3,
+        title: "Database Fundamentals",
+        description: "Understand SQL, tables, and relationships.",
+        lessons: ["SQL Queries", "Joins", "Constraints"],
+        progress: 0
+      }
+    ];
+
+    let user = null;
+    let selectedCourse = null;
+
+    // ---------- Login ----------
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) return alert("Please enter a name!");
+
+      user = username;
+      localStorage.setItem("vibelearn_user", user);
+
+      // Load saved progress or initialize
+      if (!localStorage.getItem(`${user}_courses`)) {
+        localStorage.setItem(`${user}_courses`, JSON.stringify(courses));
+      }
+
+      document.getElementById("authScreen").style.display = "none";
+      document.getElementById("courseScreen").style.display = "block";
+      renderCourses();
+    }
+
+    // Auto-login if user exists
+    window.onload = () => {
+      const savedUser = localStorage.getItem("vibelearn_user");
+      if (savedUser) {
+        user = savedUser;
+        document.getElementById("authScreen").style.display = "none";
+        document.getElementById("courseScreen").style.display = "block";
+        renderCourses();
+      }
+    };
+
+    // ---------- Render Courses ----------
+    function renderCourses(filteredCourses = null) {
+      const list = document.getElementById("courseList");
+      const data = filteredCourses || JSON.parse(localStorage.getItem(`${user}_courses`));
+      list.innerHTML = "";
+
+      data.forEach(course => {
+        const card = document.createElement("div");
+        card.className = "course-card";
+        const progressPercent = Math.round(course.progress / course.lessons.length * 100);
+
+        card.innerHTML = `
+          <h3>${course.title}</h3>
+          <p>${course.description}</p>
+          <div class="progress-bar"><div class="progress" style="width:${progressPercent}%"></div></div>
+          <p><strong>Progress:</strong> ${progressPercent}%</p>
+        `;
+        card.onclick = () => showCourseDetails(course.id);
+        list.appendChild(card);
+      });
+    }
+
+    // ---------- Search Courses ----------
+    function filterCourses() {
+      const query = document.getElementById("searchBar").value.toLowerCase();
+      const allCourses = JSON.parse(localStorage.getItem(`${user}_courses`));
+      const filtered = allCourses.filter(c => c.title.toLowerCase().includes(query));
+      renderCourses(filtered);
+    }
+
+    // ---------- Show Course Details ----------
+    function showCourseDetails(id) {
+      const allCourses = JSON.parse(localStorage.getItem(`${user}_courses`));
+      selectedCourse = allCourses.find(c => c.id === id);
+
+      document.getElementById("courseTitle").textContent = selectedCourse.title;
+      document.getElementById("courseDescription").textContent = selectedCourse.description;
+
+      const lessonsDiv = document.getElementById("lessons");
+      lessonsDiv.innerHTML = "";
+
+      selectedCourse.lessons.forEach((lesson, i) => {
+        const done = i < selectedCourse.progress;
+        const div = document.createElement("div");
+        div.className = "lesson";
+        div.innerHTML = `
+          <span>${done ? "✅" : "📘"} ${lesson}</span>
+          ${!done ? `<button onclick="markLesson(${i})">Mark Done</button>` : ""}
+        `;
+        lessonsDiv.appendChild(div);
+      });
+
+      document.getElementById("courseScreen").style.display = "none";
+      document.getElementById("courseDetails").style.display = "block";
+    }
+
+    // ---------- Mark Lesson Complete ----------
+    function markLesson(index) {
+      const allCourses = JSON.parse(localStorage.getItem(`${user}_courses`));
+      const course = allCourses.find(c => c.id === selectedCourse.id);
+
+      if (course.progress < course.lessons.length) {
+        course.progress++;
+        localStorage.setItem(`${user}_courses`, JSON.stringify(allCourses));
+        showCourseDetails(course.id);
+      }
+    }
+
+    // ---------- Back ----------
+    function showCourseList() {
+      document.getElementById("courseDetails").style.display = "none";
+      document.getElementById("courseScreen").style.display = "block";
+      renderCourses();
+    }
+  </script>
+</body>
+</html>
+
+
