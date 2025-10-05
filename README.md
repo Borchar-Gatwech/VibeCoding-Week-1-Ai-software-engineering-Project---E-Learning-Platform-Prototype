@@ -38,7 +38,7 @@ mini-elearning-platform/
 
 Download or clone this repository:
 
-git clone https://github.com/your-username/mini-elearning-platform.git
+git clone https://github.com/Borchar-Gatwech/VibeCoding-Week-1-Ai-software-engineering-Project---E-Learning-Platform-Prototype
 
 
 Open the index.html file in your browser:
